@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../static/css/user.css">
+    <script src="https://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="user-wrapper">
+             <div class="aui-info">
+                <img src="/image/?picture={{ picture }}" id="img-txz" style="width: 3rem" class="avatar"/>
+                <input type="file" accept="image/*" id="file-txz" name="file" onchange="upload('#file-txz', '#img-txz');"  class="fileInput"  value="" />
+             </div>
+            <div style="margin: 30px;display: block"></div>
+            用户名  <input class="input-item" value="{{ username }}" name="username" disabled="disabled">
+            昵称   <input class="input-item" value="{{ nickname }}" name="nickname">
+            <div class="btn" style="cursor:pointer"> 提交</div>
+            <div class="logout btn" style="cursor:pointer"> 注销</div>
+        </div>
+    </div>
+    <script>
+        $(".logout").click(function (){
+
+        })
+        let upload = function (c, d) {
+            let $c = document.querySelector(c),
+            $d = document.querySelector(d),
+            file = $c.files[0],
+            reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                $d.setAttribute("src", e.target.result);
+            };
+        };
+    </script>
+</body>
+</html>

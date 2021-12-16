@@ -1,0 +1,84 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Open Sans Light';
+    letter-spacing: .05em;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+}
+
+.logout:active {
+    color: #aaaada;
+}
+
+
+.container {
+    height: 100%;
+    background-image: linear-gradient(to right,#fbc2eb,#a6c1ee);
+}
+
+.user-wrapper {
+    background-color: #fff;
+    width: 300px;
+    height: 500px;
+    padding: 0 50px;
+    position: relative;
+    left: 50%;
+    border-radius: 15px;
+    top:50%;
+    transform: translate(-50%,-50%);
+}
+
+.avatar {
+    width: 100px !important;
+    height: 100px;
+    border-radius: 100px;
+    margin: 0 auto 20px;
+    position: relative;
+    top: 20px;
+    left: 100px;
+    display: inline-block;
+}
+
+.btn {
+    text-align: center;
+    padding: 5px;
+    margin-top: 20px;
+    background-image: linear-gradient(to right,#fbc2eb,#a6c1ee);;
+    color: #fff;
+}
+
+.input-item {
+    display: inline-block;
+    width: 70%;
+    margin-bottom: 20px;
+    border: none;
+    padding: 10px;
+    border-bottom: 2px solid rgb(128,125,125);
+    font-size: 15px;
+    outline: none;
+}
+.aui-info {
+    position: relative;
+}
+
+ .fileInput{
+     position: absolute;
+     width: 100px;
+     height: 100px;
+     top: 20px;
+     bottom: 0;
+     left: 0;
+     right: 0px;
+     opacity: 0;
+     clear: both;
+     display: block;
+     margin: auto;
+ }
+

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+    <link rel="stylesheet" href="../static/css/login.css">
+    <script src="https://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="header">Entry Task</div>
+            {{ msg }}
+            <div class="form-wrapper">
+                <input type="text" name="username" placeholder="用户名" class="input-item">
+                <input type="password" name="password" placeholder="密码" class="input-item">
+                <div id="login" class="btn" style="cursor:pointer">登陆</div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $("#login").click(function(){
+            let username = $("input[name='username']").val()
+            let password = $("input[name='password']").val()
+            if(username == ""){
+                 $("input[name='username']").attr('placeholder','请输入用户名')
+            }
+            else if(password == ""){
+                $("input[name='password']").attr('placeholder','请输入密码')
+            }
+            else{
+                $.ajax({
+                    type: "POST",
+                    url: "/login",
+                    data: {
+                        'username': username,
+                        'password': password
+                     },
+                    dataType: "json",
+                    success: function (res){
+                        window.location = '/user.html'
+                    },
+                    error: function (res){
+                        alert("error")
+                    }
+                });
+            }
+
+		})
+    </script>
+</body>
+</html>
