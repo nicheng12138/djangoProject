@@ -5,35 +5,116 @@
     <title>Title</title>
     <link rel="stylesheet" href="../static/css/user.css">
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="https://cdn.staticfile.org/Plupload/2.1.1/moxie.js"></script>
+    <script src="https://cdn.staticfile.org/Plupload/2.1.1/plupload.dev.js"></script>
+    <script src="/static/js/qiniu.min.js"></script>
+    <script>
+        $(function (){
+            if()
+        })
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="user-wrapper">
              <div class="aui-info">
-                <img src="/image/?picture={{ picture }}" id="img-txz" style="width: 3rem" class="avatar"/>
-                <input type="file" accept="image/*" id="file-txz" name="file" onchange="upload('#file-txz', '#img-txz');"  class="fileInput"  value="" />
+                <img src="http://r47q6lm7l.hn-bkt.clouddn.com/1639712643915" id="img-txz" class="avatar"/>
              </div>
             <div style="margin: 30px;display: block"></div>
             用户名  <input class="input-item" value="{{ username }}" name="username" disabled="disabled">
             昵称   <input class="input-item" value="{{ nickname }}" name="nickname">
-            <div class="btn" style="cursor:pointer"> 提交</div>
+            <div class="update btn" style="cursor:pointer"> 提交</div>
             <div class="logout btn" style="cursor:pointer"> 注销</div>
         </div>
     </div>
     <script>
         $(".logout").click(function (){
-
+            $.ajax({
+                    type: "POST",
+                    url: "/logout",
+                    data: {
+                     },
+                    dataType: "json",
+                    success: function (res){
+                        window.location = '/'
+                    },
+                    error: function (res){
+                        alert("error")
+                    }
+                });
         })
-        let upload = function (c, d) {
-            let $c = document.querySelector(c),
-            $d = document.querySelector(d),
-            file = $c.files[0],
-            reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = function (e) {
-                $d.setAttribute("src", e.target.result);
-            };
-        };
+        $(".update").click(function (){
+            let nickname = $("input[name='nickname']").val()
+            if (nickname == ""){
+                $("input[name='nickname']").attr('placeholder','昵称不能为空')
+            }else{
+                 $.ajax({
+                    type: "POST",
+                    url: "/updateuser",
+                    data: {
+                        'nickname': nickname,
+                        'picture': $('#img-txz').src
+                     },
+                    dataType: "json",
+                    success: function (res){
+                        alert("修改成功")
+                        $("input[name='nickname']").attr('vlaue',nickname)
+                    },
+                    error: function (res){
+                        alert("error")
+                    }
+                });
+            }
+        })
+        let domain = 'r47q6lm7l.hn-bkt.clouddn.com'
+        let filename
+        let uploader = Qiniu.uploader({
+            url: 'up-z2.qiniup.com',
+            runtimes: 'html5,flash,html4', //上传模式，依次退化
+            browse_button: 'img-txz', //上传选择的点选按钮id，必须
+            max_file_size: '500mb', //文件最大允许的尺寸
+            dragdrop: false, //是否开启拖拽上传
+            chunk_size: '4mb', //分块上传时，每片的大小
+            uptoken_url: '/getToken', //ajax请求token的url
+            domain: domain, //图片下载时候的域名
+            get_new_uptoken: false, //是否每次上传文件都要从业务服务器获取token
+            auto_start: true, //是否自动上传
+            init: {
+                'FilesAdded': function (up, files) {
+                    // 文件添加进队列后，处理相关的事情
+            },
+            'BeforeUpload': function (up, file) {
+                    // 每个文件上传前，处理相关的事情
+            },
+            'UploadProgress': function () {
+                // 每个文件上传时，处理相关的事情
+            },
+            'FileUploaded': function (up, file, info) {
+                // 每个文件上传成功后，处理相关的事情
+                // 刚刚上传的文件名称domain + file.name
+                // 把上传的文件地址保存到本地的隐藏域中
+                $('#img-txz').attr('src','http://' + domain +'/'+ filename);
+            },
+            'Error': function (up, err, errTip) {
+                console.log('error:' + err);
+            },
+            'UploadComplete': function () {
+                //队列文件处理完毕后，处理相关的事情
+            },
+            'Key': function (up, file) {
+                // 若想在前端对每个文件的key进行个性化处理，可以配置该函数
+                // 该配置必须要在unique_names: false，save_key: false时才生效
+                let key =  $("input[name='username']").val() + "" + new Date().valueOf(); // 对上传的文件重命名
+                console.log(key)
+                filename = key
+                // do something with key here
+                return key
+            }
+        }
+    });
+        $('#img-txz').click(function (){
+            uploader.start()
+        })
     </script>
 </body>
 </html>

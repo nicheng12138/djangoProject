@@ -56,6 +56,8 @@ body {
     margin-top: 40px;
     background-image: linear-gradient(to right,#fbc2eb,#a6c1ee);;
     color: #fff;
+    border: none;
+    width: 275px;
 }
 
 .login-wrapper  .msg {

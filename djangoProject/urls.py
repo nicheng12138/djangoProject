@@ -22,7 +22,8 @@ urlpatterns = [
     url(r'^login', views.login),
     url(r'^admin/', admin.site.urls),
     url(r'^user', views.user),
-    url(r'^files', views.files),
-    url(r'^image/$', views.my_image),
+    url(r'^updateuser', views.update_user),
+    url(r'^getToken', views.get_token),
+    url(r'^logout', views.logout),
 ]
 
