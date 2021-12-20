@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>login</title>
     <link rel="stylesheet" href="/static/css/login.css">
+    <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script>
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
 </head>
 <body>
@@ -13,26 +14,28 @@
             <div class="header">Entry Task</div>
             {{ msg }}
             <div class="form-wrapper">
-                <form action="/login" method="post" name="myform">
+                <form action="/login" method="post" name="myform" onsubmit="check()">
                     <input type="text" name="username" placeholder="用户名" class="input-item">
-                    <input type="password" name="password" placeholder="密码" class="input-item">
+                    <input type="password" name="password" placeholder="密码" class="input-item" id="pwd">
                     {% csrf_token %}
-                    <input type="button" id="login" class="btn" value="登陆" onclick="check()"/>
+                    <input type="submit" id="login" class="btn" value="登陆"/>
                 </form>
             </div>
         </div>
     </div>
     <script type="text/javascript">
         function check() {
-              if($("input[name='username']").val()=='') {
-                  $("input[name='username']").attr('placeholder','用户名不能为空')
-                  return false
-               }
-               if($("input[name='password']").val()==''){
-                   $("input[name='password']").attr('placeholder','密码不能为空')
-                  return false
-              }
-            document.myform.submit()
+            if($("input[name='username']").val()=='') {
+                $("input[name='username']").attr('placeholder','用户名不能为空')
+                return false
+            }
+            if($("input[name='password']").val()==''){
+                $("input[name='password']").attr('placeholder','密码不能为空')
+                return false
+            }
+            var pwd=document.getElementById('pwd');
+            pwd.value=md5(pwd.value);
+            return true
          }
     </script>
 </body>

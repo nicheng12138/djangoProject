@@ -7,18 +7,14 @@
     <script src="https://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
     <script src="https://cdn.staticfile.org/Plupload/2.1.1/moxie.js"></script>
     <script src="https://cdn.staticfile.org/Plupload/2.1.1/plupload.dev.js"></script>
+    <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script src="/static/js/qiniu.min.js"></script>
-    <script>
-        $(function (){
-            if()
-        })
-    </script>
 </head>
 <body>
     <div class="container">
         <div class="user-wrapper">
              <div class="aui-info">
-                <img src="http://r47q6lm7l.hn-bkt.clouddn.com/1639712643915" id="img-txz" class="avatar"/>
+                <img src="{{ picture }}" id="img-txz" class="avatar"/>
              </div>
             <div style="margin: 30px;display: block"></div>
             用户名  <input class="input-item" value="{{ username }}" name="username" disabled="disabled">
@@ -33,10 +29,11 @@
                     type: "POST",
                     url: "/logout",
                     data: {
+                        'token': $.cookie('token')
                      },
                     dataType: "json",
                     success: function (res){
-                        window.location = '/'
+                        window.location.href="/"
                     },
                     error: function (res){
                         alert("error")
@@ -52,12 +49,13 @@
                     type: "POST",
                     url: "/updateuser",
                     data: {
+                        'token': $.cookie('token'),
                         'nickname': nickname,
-                        'picture': $('#img-txz').src
+                        'picture': $('#img-txz')[0].src
                      },
                     dataType: "json",
                     success: function (res){
-                        alert("修改成功")
+                        alert(res.msg)
                         $("input[name='nickname']").attr('vlaue',nickname)
                     },
                     error: function (res){

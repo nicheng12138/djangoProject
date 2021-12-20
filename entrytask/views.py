@@ -3,13 +3,15 @@ from __future__ import unicode_literals
 
 import json
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 from django.views.decorators.csrf import csrf_exempt
 from qiniu import Auth
 
+from rpc.config import conf
 from rpc.rpcClient import RPCClient
+from tcpServer.var import Code
 
 
 def index(request):
@@ -19,31 +21,39 @@ def index(request):
 def login(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
+    print password
+    if username is None or password is None:
+        return render(request, "templates/login.html")
     client = RPCClient()
-    client.connect('127.0.0.1', 5000)
+    client.connect(conf.host, conf.port)
     result = client.login(username, password)
-    data = eval(result)
-    print data['code']
-    if data['code'] == -1 or data['code'] == -2:
-        return render(request, "templates/login.html", data)
-
-    return render(request, "templates/user.html", data)
-
-
-def user(request):
-    context = {
-        'username': 'dhasiu',
-        'nickname': 'csd',
-        'picture': 'r47q6lm7l.hn-bkt.clouddn.com/1639712643915'
+    client.close()
+    if result['code'] != 0:
+        return render(request, "templates/login.html", result)
+    res = result['data']
+    data = {
+        'username': res['username'],
+        'nickname': res['nickname'],
+        'picture': res['picture']
     }
-    return render(request, "templates/user.html", context)
+    response = render(request, 'templates/user.html', data)
+    response.set_cookie('token', res['token'])
+    return response
 
 
 @csrf_exempt
 def update_user(request):
-    print request.POST.get('nickname')
-    print request.POST.get('picture')
-    return JsonResponse({'msg': 'success'})
+    token = request.POST.get('token')
+    nickname = request.POST.get('nickname')
+    picture = request.POST.get('picture')
+    client = RPCClient()
+    client.connect(conf.host, conf.port)
+    print token
+    result = client.update_user(token, nickname, picture)
+    client.close()
+    if result['code'] == Code.AUTH_FAIL:
+        render(request, 'templates/login.html', result)
+    return JsonResponse({'msg': result['msg']})
 
 
 def get_token(request):
@@ -57,6 +67,31 @@ def get_token(request):
 
 @csrf_exempt
 def logout(request):
-    response = JsonResponse({})
-    response.delete_cookie('login')
+    client = RPCClient()
+    client.connect(conf.host, conf.port)
+    token = request.POST.get('token')
+    res = client.logout(token)
+    response = JsonResponse(res)
+    response.delete_cookie('token')
     return response
+
+
+def get_user(request):
+    token = request.COOKIES.get('token')
+    if token is None:
+        return render(request, "templates/login.html", {
+            'msg': 'token is invalid'
+        })
+    client = RPCClient()
+    client.connect(conf.host, conf.port)
+    result = client.get_user(token)
+    client.close()
+    if result['code'] != 0:
+        return render(request, "templates/login.html", result)
+    res = result['data']
+    data = {
+        'username': res['username'],
+        'nickname': res['nickname'],
+        'picture': res['picture']
+    }
+    return render(request, 'templates/user.html', data)

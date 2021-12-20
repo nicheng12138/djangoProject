@@ -10,20 +10,20 @@ def insert(sql, args):
     conn = get_conn()
     cur = conn.cursor()
     result = cur.execute(sql, args)
-    print (result)
     conn.commit()
     cur.close()
     conn.close()
+    return result
 
 
 def update(sql, args):
     conn = get_conn()
     cur = conn.cursor()
     result = cur.execute(sql, args)
-    print(result)
     conn.commit()
     cur.close()
     conn.close()
+    return result
 
 
 def query(sql, args):

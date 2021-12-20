@@ -1,60 +1,68 @@
 import json
+import os
 import socket
+import struct
 
 
-class TCPServer(object):
+def pre_fork(n):
+    for i in range(n):
+        pid = os.fork()
+        if pid < 0:
+            return
+        if pid > 0:
+            continue
+        if pid == 0:
+            break
+
+
+def receive(conn, n):
+    rs = []
+    while n > 0:
+        r = conn.recv(n)
+        if not r:  # EOF
+            return rs
+        rs.append(r)
+        n -= len(r)
+    return ''.join(rs)
+
+
+class RPCServer(object):
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    def bind_listen(self, port):
-        self.sock.bind(('0.0.0.0', port))
-        self.sock.listen(5)
-
-    def accept_receive_close(self):
-        (client_socket, address) = self.sock.accept()
-        msg = client_socket.recv(1024)
-        data = self.on_msg(msg)
-        client_socket.sendall(data)
-        client_socket.close()
-
-
-class JSONRPC(object):
-    def __init__(self):
-        self.data = None
-
-    def from_data(self, data):
-        self.data = json.loads(data.decode('utf-8'))
-
-    def call_method(self, data):
-        self.from_data(data)
-        method_name = self.data['method_name']
-        method_args = self.data['method_args']
-        method_kwargs = self.data['method_kwargs']
-        res = self.funs[method_name](*method_args, **method_kwargs)
-        return json.dumps(res).encode('utf-8')
-
-
-class RPCServerStub(object):
-    def __init__(self):
         self.funs = {}
 
-    def register_function(self, function, name=None):
+    def connect(self, port, num=None):
+        self.sock.bind(('localhost', port))
+        if num is None:
+            num = 1
+        self.sock.listen(num)
+        pre_fork(10)
+        self.loop(self.sock)
+
+    def register_method(self, function, name=None):
         if name is None:
             name = function.__name__
         self.funs[name] = function
 
-
-class RPCServer(TCPServer, JSONRPC, RPCServerStub):
-    def __init__(self):
-        TCPServer.__init__(self)
-        JSONRPC.__init__(self)
-        RPCServerStub.__init__(self)
-
-    def loop(self, port):
-        self.bind_listen(port)
-        print('Server listen 5000 ...')
+    def loop(self, sock):
         while True:
-            self.accept_receive_close()
+            conn, addr = self.sock.accept()
+            self.handle_conn(conn)
 
-    def on_msg(self, data):
-        return self.call_method(data)
+    def handle_conn(self, conn):
+        while True:
+            length_prefix = receive(conn, 4)
+            if not length_prefix:
+                conn.close()
+                break
+            length, = struct.unpack("I", length_prefix)
+            body = receive(conn, length)
+            request = json.loads(body, encoding='utf-8')
+            name = request['name']
+            args = request['args']
+            kwargs = request['kwargs']
+            res = self.funs[name](*args, **kwargs)
+            response = json.dumps(res.__dict__).encode('utf-8')
+            length_prefix = struct.pack("I", len(response))
+            conn.sendall(length_prefix)
+            conn.sendall(response)
