@@ -3,8 +3,8 @@ import socket
 import struct
 import threading
 
-from tcpServer.rsp import my_rsp
-from tcpServer.var import Code
+from tcpServer.common.rsp import my_rsp
+from tcpServer.common.var import Code
 
 
 class TCPClient(object):

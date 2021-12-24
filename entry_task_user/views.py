@@ -12,7 +12,7 @@ from qiniu import Auth
 
 import conf.conf
 from rpc.rpcClient import RPCClient
-from tcpServer.var import Code
+from tcpServer.common.var import Code
 
 
 

@@ -2,8 +2,8 @@ import json
 import socket
 import struct
 
-from tcpServer.rsp import my_rsp
-from tcpServer.var import Code
+from tcpServer.common.rsp import my_rsp
+from tcpServer.common.var import Code
 
 
 def receive(conn, n):
