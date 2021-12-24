@@ -11,11 +11,13 @@ Class-based views
     2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
 Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^entrytask/', include('entrytask.urls'))
+    2. Add a URL to urlpatterns:  url(r'^entry_task_user/', include('entry_task_user.urls'))
 """
 from django.conf.urls import url
 from django.contrib import admin
-from entrytask import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+from entry_task_user import views
 
 urlpatterns = [
     url(r'^$', views.index),
@@ -27,3 +29,4 @@ urlpatterns = [
     url(r'^user', views.get_user),
 ]
 
+urlpatterns += staticfiles_urlpatterns()

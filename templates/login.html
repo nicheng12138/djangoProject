@@ -14,7 +14,7 @@
             <div class="header">Entry Task</div>
             {{ msg }}
             <div class="form-wrapper">
-                <form action="/login" method="post" name="myform" onsubmit="check()">
+                <form action="/login" method="post" name="myform" onsubmit="return check()">
                     <input type="text" name="username" placeholder="用户名" class="input-item">
                     <input type="password" name="password" placeholder="密码" class="input-item" id="pwd">
                     {% csrf_token %}
@@ -29,12 +29,12 @@
                 $("input[name='username']").attr('placeholder','用户名不能为空')
                 return false
             }
-            if($("input[name='password']").val()==''){
+            else if($("input[name='password']").val()==''){
                 $("input[name='password']").attr('placeholder','密码不能为空')
                 return false
             }
-            var pwd=document.getElementById('pwd');
-            pwd.value=md5(pwd.value);
+            var pwd = document.getElementById('pwd');
+            pwd.value = md5(pwd.value);
             return true
          }
     </script>

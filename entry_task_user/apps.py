@@ -5,4 +5,4 @@ from django.apps import AppConfig
 
 
 class BlogConfig(AppConfig):
-    name = 'entrytask'
+    name = 'entry_task_user'

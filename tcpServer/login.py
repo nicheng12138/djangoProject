@@ -3,18 +3,20 @@ import random
 import time
 
 from tcpServer.mysqlUtil import query
-from tcpServer.redisUtil import set_str, get_str
+from tcpServer.redisUtil import set_str
 from tcpServer.rsp import my_rsp
 from tcpServer.var import Code
 
 
 def login(username, password):
     sql = 'select * from user where username = %s'
-    results = query(sql, username)
+    results = query(sql, (username,))
     if len(results) == 0:
         data = my_rsp(code=Code.NOT_FOUND, msg='user not found', data=None)
+    elif results[0] == Code.MYSQL_FAIL:
+        data = my_rsp(code=Code.AUTH_FAIL, msg='mysql error', data=None)
     elif results[0][2] != password:
-        data = my_rsp(code=Code.AUTH_FAIL, msg='username or passwd error', data=None)
+        data = my_rsp(code=Code.AUTH_FAIL, msg='username or password error', data=None)
     else:
         token = str(time.time()) + str(results[0][0]) + str(random.sample('zyxwvutsrqponmlkjihgfedcba', 5))
         md5 = hashlib.md5()

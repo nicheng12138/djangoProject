@@ -42,17 +42,21 @@
         })
         $(".update").click(function (){
             let nickname = $("input[name='nickname']").val()
+            let username = $("input[name='username']").val()
+            let request = {
+                'token': $.cookie('token'),
+                'nickname': nickname,
+                'username': username,
+                'picture': $('#img-txz')[0].src
+            }
             if (nickname == ""){
                 $("input[name='nickname']").attr('placeholder','昵称不能为空')
             }else{
                  $.ajax({
                     type: "POST",
                     url: "/updateuser",
-                    data: {
-                        'token': $.cookie('token'),
-                        'nickname': nickname,
-                        'picture': $('#img-txz')[0].src
-                     },
+                    data: JSON.stringify(request),
+                    contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (res){
                         alert(res.msg)

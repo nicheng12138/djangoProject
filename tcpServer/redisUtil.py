@@ -1,24 +1,47 @@
 import redis
 
+import conf.conf
+import tcpServer
+from tcpServer.var import Code
+
+pool = redis.ConnectionPool(host=conf.conf.RDS_HOST, port=conf.conf.RDS_PORT, decode_responses=True)
+
 
 def get_conn():
-    pool = redis.ConnectionPool(host='localhost', port=6379, decode_responses=True)
-    redis_conn = redis.Redis(connection_pool=pool)
+    try:
+        redis_conn = tcpServer.redis.Redis(connection_pool=pool)
+    except Exception as e:
+        print "RedisError: " + e.message
     return redis_conn
 
 
 def get_str(key):
-    return get_conn().get(key)
+    try:
+        res = get_conn().get(key)
+    except Exception as e:
+        print "RedisError: " + e.message
+        res = -1
+    return res
 
 
 def set_str(key, value):
-    conn = get_conn()
-    conn.set(key, value, ex=1800)
+    try:
+        conn = get_conn()
+        res = conn.set(key, value, ex=1800)
+    except Exception as e:
+        print "RedisError: " + e.message
+        res = Code.REDIS_FAIL
+    return res
 
 
 def del_key(key):
-    conn = get_conn()
-    conn.delete(key)
+    try:
+        conn = get_conn()
+        res = conn.delete(key)
+    except Exception as e:
+        print "RedisError: " + e.message
+        res = Code.REDIS_FAIL
+    return res
 
 
 
