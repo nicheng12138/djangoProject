@@ -2,26 +2,15 @@ import json
 import socket
 import struct
 
+from rpc.rpc_util import receive
 from tcpServer.common.rsp import my_rsp
 from tcpServer.common.var import Code
 
 
-def receive(conn, n):
-    rs = []
-    while n > 0:
-        r = conn.recv(n)
-        if not r:  # EOF
-            return r
-        rs.append(r)
-        n -= len(r)
-    return ''.join(rs)
-
-
-class RPCServer(object):
+class rpc_server(object):
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.funs = {}
-        # self.num = threading.Semaphore(20)
+        self.funcs = {}
 
     def connect(self, port):
         self.sock.bind(('localhost', port))
@@ -31,12 +20,15 @@ class RPCServer(object):
     def register_method(self, function, name=None):
         if name is None:
             name = function.__name__
-        self.funs[name] = function
+        self.funcs[name] = function
 
     def loop(self, sock):
         while True:
             conn, addr = self.sock.accept()
-            self.handle_conn(conn, addr)
+            try:
+                self.handle_conn(conn, addr)
+            except socket.error as e:
+                log
 
     def handle_conn(self, conn, addr):
         try:
