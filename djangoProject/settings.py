@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Django settings for djangoProject project.
 
@@ -9,7 +10,7 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-
+LOGGING_DIR = 'logs'
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -124,3 +125,38 @@ STATICFILES_DIRS = [
 APPEND_SLASH = False
 
 IMG_UPLOAD = os.path.join(BASE_DIR, 'static/uploads')
+
+LOGGING = {
+    'version': 1,  #版本
+    'disable_existing_loggers': False,  # 是否禁用已经存在的日志器
+    'formatters': {  # 日志信息显示的格式
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
+        },
+    },
+    'filters': {  # 过滤器
+        'require_debug_true': {  # django在debug模式下才输出日志
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {  # 日志处理方法
+        'file': {  # 向文件中输出日志
+            'level': 'INFO', #输出等级为“INFO”
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'info.log'), # 日志文件的位置
+            'maxBytes': 300 * 1024 * 1024, # 日志文件的大小（300*1024*1024为300MB）
+            'backupCount': 10, #日志文件的数量（超过设定的最大值会自动备份，备份数量最大值为10）
+            'formatter': 'verbose' #日志输出格式：使用了在之前定义的'verbose'
+        },
+    },
+    'loggers': {  # 日志器
+        'file_info': {  # 定义了一个名为file_info的日志器
+            'handlers': ['file'],  # 可以同时向终端与文件中输出日志
+            'propagate': True,  # 是否继续传递日志信息
+            'level': 'INFO',  # 日志器接收的最低日志级别
+        },
+    }
+}

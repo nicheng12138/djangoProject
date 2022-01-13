@@ -1,3 +1,4 @@
+# coding=utf-8
 import hashlib
 import random
 import time
@@ -5,6 +6,8 @@ import time
 from tcpServer import mysql, redis
 from tcpServer.common.rsp import my_rsp
 from tcpServer.common.var import Code
+
+
 user_util = mysql.UserUtil()
 token_util = redis.Token()
 
@@ -36,8 +39,8 @@ def code_pwd(password):
     return password
 
 
-def check_token(token):
-    return token_util.check_token(token)
+def check_token(token, uid):
+    return token_util.check_token(token, uid)
 
 
 def logout(token):
