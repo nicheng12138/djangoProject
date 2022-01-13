@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^getToken', views.get_token),
     url(r'^logout', views.logout),
     url(r'^user', views.get_user),
+    url(r'^health', views.health),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

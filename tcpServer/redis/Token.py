@@ -6,11 +6,11 @@ class Token(Base):
     def __init__(self):
         Base.__init__()
 
-    def check_token(self, token, id):
+    def check_token(self, token, uid):
         if token is None:
             return False
         uuid = self.str_get(token)
-        if uuid != id:
+        if uuid != uid:
             return False
         return True
 

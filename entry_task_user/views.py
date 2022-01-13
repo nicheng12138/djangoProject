@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import json
+import logging
 import socket
 
 from django.http import JsonResponse
@@ -11,9 +12,15 @@ from django.views.decorators.csrf import csrf_exempt
 from qiniu import Auth
 
 import conf.conf
-from rpc.rpcClient import RPCClient
+from conf.log import log
+from entry_task_user.models import verify_token
+from rpc.rpc_client import rpc_client
 from tcpServer.common.var import Code
 
+
+def health(request):
+    log.info("health: ip=%s" % (request.META.get('HTTP_X_FORWARDED_FOR')))
+    return JsonResponse({"health": "success"})
 
 
 def index(request):
@@ -25,7 +32,7 @@ def login(request):
     password = request.POST.get('password')
     if username is None or password is None:
         return render(request, "templates/login.html")
-    client = RPCClient()
+    client = rpc_client()
     client.connect(conf.conf.RPC_SVR_IP, conf.conf.RPC_SVR_PORT)
     result = client.login(username, password)
     client.close()
@@ -43,6 +50,7 @@ def login(request):
 
 
 @csrf_exempt
+@verify_token()
 def update_user(request):
     try:
         data = json.loads(request.body)
@@ -50,7 +58,7 @@ def update_user(request):
         nickname = data['nickname']
         username = data['username']
         picture = data['picture']
-        client = RPCClient()
+        client = rpc_client()
         client.connect(conf.conf.RPC_SVR_IP, conf.conf.RPC_SVR_PORT)
         result = client.update_user(token, nickname, picture, username)
         client.close()
@@ -67,6 +75,7 @@ def update_user(request):
         return JsonResponse({"code": Code.FAIL, "msg": "fail"})
 
 
+@verify_token()
 def get_token(request):
     access_key = "8J_W4UfqsRPWQ5K4X0nb5lxrvcqJGOOkLLwB3gmF"
     secret_key = "V20AyRsE8R94ahRgPjZq7mBv5o8ofkBOBqMu676d"
@@ -77,9 +86,10 @@ def get_token(request):
 
 
 @csrf_exempt
+@verify_token()
 def logout(request):
     token = request.POST.get('token')
-    client = RPCClient()
+    client = rpc_client()
     client.connect(conf.conf.RPC_SVR_IP, conf.conf.RPC_SVR_PORT)
     res = client.logout(token)
     client.close()
@@ -88,6 +98,7 @@ def logout(request):
     return response
 
 
+@verify_token()
 def get_user(request):
     token = request.COOKIES.get('token')
     username = None
@@ -102,7 +113,7 @@ def get_user(request):
                 'msg': 'token is invalid'
             })
     try:
-        client = RPCClient()
+        client = rpc_client()
         client.connect(conf.conf.RPC_SVR_IP, conf.conf.RPC_SVR_PORT)
         result = client.get_user(token, username)
         client.close()
