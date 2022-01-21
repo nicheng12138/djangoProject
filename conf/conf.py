@@ -3,7 +3,7 @@
 
 # rpc配置
 RPC_SVR_IP = "127.0.0.1"
-RPC_SVR_PORT = 5001
+RPC_SVR_PORT = 5000
 
 
 # redis 配置

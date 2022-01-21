@@ -1,10 +1,10 @@
-from tcpServer.redis.Base import Base
+from tcpServer.redis.redis_base import redis_base
 
 
-class Token(Base):
+class token_util(redis_base):
 
     def __init__(self):
-        Base.__init__()
+        redis_base.__init__(self)
 
     def check_token(self, token, uid):
         if token is None:

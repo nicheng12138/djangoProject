@@ -143,7 +143,7 @@ LOGGING = {
         },
     },
     'handlers': {  # 日志处理方法
-        'file': {  # 向文件中输出日志
+        'info': {  # 向文件中输出日志
             'level': 'INFO', #输出等级为“INFO”
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOGGING_DIR, 'info.log'), # 日志文件的位置
@@ -151,12 +151,19 @@ LOGGING = {
             'backupCount': 10, #日志文件的数量（超过设定的最大值会自动备份，备份数量最大值为10）
             'formatter': 'verbose' #日志输出格式：使用了在之前定义的'verbose'
         },
+        'data': {  # 向文件中输出日志
+            'level': 'DEBUG', #输出等级为“DEBUG”
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'data.log'), # 日志文件的位置
+            'maxBytes': 300 * 1024 * 1024, # 日志文件的大小（300*1024*1024为300MB）
+            'backupCount': 10, #日志文件的数量（超过设定的最大值会自动备份，备份数量最大值为10）
+            'formatter': 'verbose' #日志输出格式：使用了在之前定义的'verbose'
+        },
     },
     'loggers': {  # 日志器
         'file_info': {  # 定义了一个名为file_info的日志器
-            'handlers': ['file'],  # 可以同时向终端与文件中输出日志
-            'propagate': True,  # 是否继续传递日志信息
-            'level': 'INFO',  # 日志器接收的最低日志级别
+            'handlers': ['info', 'data'],  # 可以同时向终端与文件中输出日志
+            'level': 'DEBUG',  # 日志器接收的最低日志级别
         },
     }
 }

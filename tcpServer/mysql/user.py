@@ -1,10 +1,10 @@
-from tcpServer.mysql.Base import Base
+from tcpServer.mysql.mysql_base import mysql_base
 
 
-class UserUtil(Base):
+class user_mysql(mysql_base):
 
     def __init__(self):
-        Base.__init__()
+        mysql_base.__init__(self)
 
     def get_user_by_name(self, username):
         sql = "select * from entry_task_user where username = %s"

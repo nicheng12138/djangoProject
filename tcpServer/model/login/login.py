@@ -3,17 +3,17 @@ import hashlib
 import random
 import time
 
-from tcpServer import mysql, redis
 from tcpServer.common.rsp import my_rsp
 from tcpServer.common.var import Code
+from tcpServer.mysql.user import user_mysql
+from tcpServer.redis.token_util import token_util
 
-
-user_util = mysql.UserUtil()
-token_util = redis.Token()
-
+user_util = user_mysql()
+token_util = token_util()
+letter_range = "zyxwvutsrqponmlkjihgfedcba"
 
 def login(username, password):
-    res = user_util.get_one_by_name()
+    res = user_util.get_user_by_name(username)
     # 用户名错误
     if res is None:
         data = my_rsp(code=Code.NOT_FOUND, msg='user not found', data=None)
@@ -24,13 +24,14 @@ def login(username, password):
     elif res[2] != code_pwd(password):
         data = my_rsp(code=Code.AUTH_FAIL, msg='username or password error', data=None)
     else:
-        token = get_token()
+        token = get_token(res[0][0])
         token_util.set_token(token, res[0], 1800)
         data = my_rsp(code=Code.SUC, msg='success', data={
             'username': username,
             'nickname': res[3],
             'picture': res[4],
-            'token': token
+            'token': token,
+            'uid': res[0],
         })
     return data
 
@@ -50,8 +51,8 @@ def logout(token):
     return my_rsp(code=Code.SUC, msg='success', data=None)
 
 
-def get_token():
-    token = str(time.time()) + str(results[0][0]) + str(random.sample('zyxwvutsrqponmlkjihgfedcba', 5))
+def get_token(uid):
+    token = str(time.time()) + str(uid) + str(random.sample(letter_range, 5))
     md5 = hashlib.md5()
     md5.update(token.encode(encoding='utf-8'))
     return md5.hexdigest()

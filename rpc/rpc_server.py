@@ -1,7 +1,9 @@
 import json
 import socket
 import struct
+import thread
 
+from conf.log import log
 from rpc.rpc_util import receive
 from tcpServer.common.rsp import my_rsp
 from tcpServer.common.var import Code
@@ -26,11 +28,11 @@ class rpc_server(object):
         while True:
             conn, addr = self.sock.accept()
             try:
-                self.handle_conn(conn, addr)
+                thread.start_new_thread(self.handle_conn, conn)
             except socket.error as e:
-                log
+                log.info("connect error,addr is %s" % addr)
 
-    def handle_conn(self, conn, addr):
+    def handle_conn(self, conn):
         try:
             while True:
                 length_prefix = conn.recv(4)
@@ -42,8 +44,7 @@ class rpc_server(object):
                 request = json.loads(body, encoding='utf-8')
                 name = request['name']
                 args = request['args']
-                kwargs = request['kwargs']
-                res = self.funs[name](*args, **kwargs)
+                res = self.funcs[name](*args)
                 if res is None:
                     res = my_rsp(Code.PARAM_INVALID, "param is invalid", None)
                 response = json.dumps(res.__dict__).encode('utf-8')

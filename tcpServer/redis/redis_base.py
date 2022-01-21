@@ -5,7 +5,7 @@ import tcpServer
 from tcpServer.common.var import Code
 
 
-class Base:
+class redis_base:
 
     def __init__(self):
         self._pool = redis.ConnectionPool(host=conf.conf.RDS_HOST, port=conf.conf.RDS_PORT, decode_responses=True)

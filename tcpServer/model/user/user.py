@@ -1,7 +1,7 @@
 from tcpServer import mysql
 from tcpServer.common.rsp import my_rsp
 from tcpServer.common.var import Code
-from tcpServer.redis.Token import Token
+from tcpServer.redis.token_util import Token
 
 
 user = mysql.UserUtil()

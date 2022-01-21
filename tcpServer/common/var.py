@@ -7,6 +7,7 @@ class Code:
     AUTH_FAIL = 10005
     REDIS_FAIL = 10006
     MYSQL_FAIL = 10007
+    ERROR_PARAMS = 10008
 
     def __init__(self):
         pass
